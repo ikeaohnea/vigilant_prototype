@@ -1,4 +1,5 @@
 <template>
+<div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <div class="container">
   <div class="header">
@@ -8,20 +9,23 @@
   <div class= "networks">
     <p>Select News Network:</p>
     <p>
-      <button v-on:click="">BBC One</button>
-      <button v-on:click="">Daily Mail</button>
-      <button v-on:click="">Telegraph</button>
-      <button v-on:click="">CNN</button>
-      <button v-on:click="">The Guardian</button>
-      <button v-on:click="">Fox News</button>
-      <button v-on:click="">New York Times</button>
-      <button v-on:click="">Economist</button>
-      <button v-on:click="">Washington Post</button>
-      <button v-on:click="">Euronews</button>
+      <button>BBC One</button>
+      <button>Daily Mail</button>
+      <button>Telegraph</button>
+      <button>CNN</button>
+      <button>The Guardian</button>
+      <button>Fox News</button>
+      <button>New York Times</button>
+      <button>Economist</button>
+      <button>Washington Post</button>
+      <button>Euronews</button>
     </p>
-    <p class="date">Select Date:</p>
-    <!-- insert date picker -->
-    <!-- <datepicker></datepicker> -->
+    <p >Select Date:</p>
+    <div class="date">
+       <!-- <vueye-datepicker v-model="date" color="#fffff" format="dd/mm/yyyy"/> -->
+      <datepicker :inline="true"></datepicker>
+      <!-- <datepicker placeholder="Select Date" v-model="vmodelexample"></datepicker>  -->
+    </div>
   </div> 
   <div class= "search-box">
       <p>
@@ -41,20 +45,31 @@
 <footer>
 <div>© Vigilant 2021 - CDCLab WS20/Practical Software Development & Applied AI WS20</div>
 </footer>
+</div>
 </template>
 
 <script>
+// import VueyeDatepicker from 'vueye-datepicker'
+import Datepicker from 'vuejs-datepicker'
+
 export default {
   name: 'App',
   data () {
     return {
-  
+      date: {
+        value:new Date(),
+        formattedValue:''
+      }
     }
   },
   methods: {
     
-    },
+  },
+  components: {
+    // VueyeDatepicker
+    Datepicker
   }
+}
 </script>
 
 <style>
@@ -63,6 +78,9 @@ export default {
 	padding: 0;
 	border: none;
   cursor: default;
+}
+h1, footer div{
+     font-family: Helvetica, sans-serif;
 }
 @font-face {
   font-family: "Woodford Bourne";
@@ -73,13 +91,15 @@ export default {
   grid-template-columns: 1fr 1fr;
   grid-template-areas: 
         "h h"
-        "n w"
+        "w a"
+        "n a"
         "n a";
   text-align: center;
+  /* height: 100vh; */
 }
-#app {
+/* #app {
   font-family: Helvetica, sans-serif;
-}
+} */
 .header{
   grid-area: h;
   background-color: black;
@@ -89,7 +109,7 @@ export default {
   justify-content: center;
 }
 img{
-  width: 54px;
+  width: auto;
   height: 63px;
   float: left;
   padding: 0 10px 0 0;
@@ -103,13 +123,18 @@ h1{
 }
 .networks{
   grid-area: n;
-  padding: 80px;
+  padding: 5%;
+  background-color: rgba(195, 204, 204, 0.24);
 }
+/* .search-box, .networks{
+  background-color: #E2E9EA;
+} */
 .search-box{
   grid-area: w;
-  background-color: #E2E9EA;
-  padding: 80px;
-  height: 80px;
+  background-color: #cbd9d9ab;
+  /* background-color: #E2E9EA; */
+  /* padding: 40px; */
+  /* height: 80px; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -146,8 +171,14 @@ input {
 .articles{
   grid-area: a;
   background-color: #CBD9D9;
-  padding: 80px;
-  height: 300px;
+  height: 100vh;
+  /* background-color: #9ab2b4; */
+  /* padding: 20px; */
+  /* border-left: 2px dashed black; */
+  /* height: 300px; */
+}
+.articles p{
+  padding: 40px 0 0 0;
 }
 p{
   font-size: 20px;
@@ -155,7 +186,10 @@ p{
   padding: 10px 0 10px 0;
 }
 .date{
-  padding: 80px;
+  /* padding: 80px; */
+  display: flex;
+  justify-content: center;
+  font-family: "Woodford Bourne", Helvetica, sans-serif;
 }
 button {
   border-radius: 4%;
