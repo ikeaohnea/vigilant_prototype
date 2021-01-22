@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "newsapi": "^2.4.1",
     "vue": "^2.6.11",
     "vuejs-datepicker": "^1.6.2",
     "vueye-datepicker": "^0.1.7"
