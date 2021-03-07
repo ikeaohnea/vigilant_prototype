@@ -69,7 +69,7 @@ export default {
   
   data () {   
     return {
-      searchTerm: 'vigilant',
+      searchTerm: 'news',
       range: '',
       newsList: [],
       filter: ""
