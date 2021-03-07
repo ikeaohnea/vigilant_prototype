@@ -6,27 +6,6 @@
     <img src="@/assets/Vigilant_Icon_red.png" alt="Vigilant Logo">
     <h1>vigilant</h1>
   </div>
-  <div class= "networks">
-    <p>Select News Network:</p>
-    <p>
-      <button>BBC One</button>
-      <button>Daily Mail</button>
-      <button>Telegraph</button>
-      <button>CNN</button>
-      <button>The Guardian</button>
-      <button>Fox News</button>
-      <button>New York Times</button>
-      <button>Economist</button>
-      <button>Washington Post</button>
-      <button>Euronews</button>
-    </p>
-    <p >Select Date:</p>
-    <div class="date">
-       <!-- <vueye-datepicker v-model="date" color="#fffff" format="dd/mm/yyyy"/> -->
-      <datepicker :inline="true"></datepicker>
-      <!-- <datepicker placeholder="Select Date" v-model="vmodelexample"></datepicker>  -->
-    </div>
-  </div> 
   <div class= "search-box">
       <p>
         <label for="">Search for the following term:</label>
@@ -38,8 +17,30 @@
           </a>
       </div>   
   </div>
+  <div class= "networks-datepicker">
+    <p>Select News Network:</p>
+    <div class="networks">
+      <button class="active" @click="filter = ''">Show all ({{uniqueSources.length}})</button>      
+      <button v-for="source in uniqueSources" :key="source" :class="{ 'active': filter === source }" @click="filter = source">{{ source }}</button>
+    </div>
+    <p>Select Date:</p>
+    <div class="date">
+      <datepicker :inline="true"></datepicker>
+    </div>
+  </div>
   <div class= "articles">
       <p>Select Article:</p>
+      <ul class="newsContainer">
+        <li v-for="(article, index) in filteredNews" :item="article" :key="index" class="news">                  
+          <h3>{{ article.title }}</h3>
+          <span>
+            Source: {{ article.source.name }}<br/>
+            Short Description: {{ article.description }}<br/>
+            Link: <a :href="article.url" style="cursor: pointer;">{{ article.url }}</a>
+          </span>
+          <br/><br/>
+        </li>
+      </ul>
   </div>
 </div>
 <footer>
@@ -59,11 +60,42 @@ export default {
       date: {
         value:new Date(),
         formattedValue:''
-      }
+      },       
+      newsList: [],
+      filter: ""
     }
   },
+  mounted() {
+    this.getPosts(); 
+  },
   methods: {
-    
+    getPosts() {
+      var newsAPIURL = "https://newsapi.org/v2/top-headlines?country=us&apiKey=7f7cf3684558439cbbb596fabb08ae74";
+    fetch(newsAPIURL)
+      .then(res => res.json())
+      .then(res => (this.newsList = res))
+      .catch(error => console.log(error));
+    }
+  },
+  computed: {
+    filteredNews() {      
+      if (!this.filter) {
+        return this.newsList.articles;
+      }
+      return this.newsList.articles.filter(p => p.source.name === this.filter);
+    },
+    uniqueSources() {
+      var newsSources = [];
+      for (const key in this.newsList.articles) {
+        if (Object.hasOwnProperty.call(this.newsList.articles, key)) {
+          const element = this.newsList.articles[key];
+          if (!newsSources.includes(element.source.name)) {
+            newsSources.push(element.source.name);
+          }
+        }
+      }
+      return newsSources;
+    }
   },
   components: {
     // VueyeDatepicker
@@ -121,6 +153,12 @@ h1{
   letter-spacing: 5px;
   text-align: center;
 }
+div.networks {
+  margin:5px; 
+  padding:5px; 
+  height: 20%;
+  overflow: auto;
+}
 .networks{
   grid-area: n;
   padding: 5%;
@@ -168,6 +206,16 @@ input {
   color: grey;
   font-size: 1em;
 }
+ul.newsContainer {
+  list-style-type: none;
+  margin: 0;
+  padding: 1em;
+}
+div.articles {
+  padding:5px; 
+  overflow: auto; 
+  text-align:justify;
+}
 .articles{
   grid-area: a;
   background-color: #CBD9D9;
@@ -181,6 +229,11 @@ input {
   padding: 40px 0 0 0;
 }
 p{
+  font-size: 20px;
+  font-family: "Woodford Bourne", Helvetica, sans-serif;
+  padding: 10px 0 10px 0;
+}
+h2{
   font-size: 20px;
   font-family: "Woodford Bourne", Helvetica, sans-serif;
   padding: 10px 0 10px 0;
