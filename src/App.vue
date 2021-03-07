@@ -1,66 +1,76 @@
 <template>
-<div>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<div class="container">
-  <div class="header">
-    <img src="@/assets/Vigilant_Icon_red.png" alt="Vigilant Logo">
-    <h1>vigilant</h1>
-  </div>
-  <div class= "search-box">
-      <p>
-        <label for="">Search for the following term:</label>
-      </p>
-      <div class="search-bar">
-         <input name=""  type="" placeholder="Search">
-          <a class="search-btn" href='#'>
-            <i class="fa fa-search"></i>
-          </a>
-      </div>   
-  </div>
-  <div class= "networks-datepicker">
-    <p>Select News Network:</p>
-    <div class="networks">
-      <button class="active" @click="filter = ''">Show all ({{uniqueSources.length}})</button>      
-      <button v-for="source in uniqueSources" :key="source" :class="{ 'active': filter === source }" @click="filter = source">{{ source }}</button>
+  <div id="app">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div class="container">
+      <div class="header">
+        <a href="./" style="cursor: pointer;"><img src="@/assets/Vigilant_Icon_red.png" alt="Vigilant Logo"></a>
+        <a href="./" style="cursor: pointer;"> <h1>vigilant</h1></a>             
+      </div>
+      <div class= "search-box">
+          <p>
+            <label for="">Search for the following term:</label>
+          </p>
+          <div class="search-bar">
+            <input name="" type="text" placeholder="Search" v-model="searchTerm" @change="getPosts">
+              <a class="search-btn" href='#'>
+                <i class="fa fa-search"></i>
+              </a>
+          </div>   
+      </div>
+      <div class= "networks-datepicker">
+        <p>Select News Network:</p>
+        <div class="networks">
+          <button class="active" @click="filter = ''">Show all ({{uniqueSources.length}})</button>      
+          <button v-for="source in uniqueSources" :key="source" :class="{ 'active': filter === source }" @click="filter = source">{{ source }}</button>
+        </div>
+        <p>Select Date Range:</p>
+        <div class="date">
+          <DatePicker @click="filter = ''" v-model="range" lang="en" range type="date" confirm></DatePicker>
+        </div>
+        <button v-on:click="range = ''">Reset Dates</button>
+      </div>
+      <div class= "articles">
+          <p>Article(s):</p>
+          <ul class="newsContainer">
+            <li v-for="(article, index) in filteredNews" :item="article" :key="index" class="news">                  
+              <h3>{{ article.title }}</h3>
+              <span>
+                Source: {{ article.source.name }}<br/>
+                Short Description: {{ article.description }}<br/>
+                Published: {{ article.publishedAt }} <br/>
+                Link: <a v-bind:href=article.url target="_blank" style="cursor: pointer;">{{ article.url }}</a>
+              </span>
+              <br/><br/>
+            </li>
+          </ul>
+      </div>
     </div>
-    <p>Select Date:</p>
-    <div class="date">
-      <datepicker :inline="true"></datepicker>
-    </div>
+    <footer>
+      <div>© Vigilant 2021 - CDCLab WS20/Practical Software Development & Applied AI WS20</div>
+    </footer>
   </div>
-  <div class= "articles">
-      <p>Select Article:</p>
-      <ul class="newsContainer">
-        <li v-for="(article, index) in filteredNews" :item="article" :key="index" class="news">                  
-          <h3>{{ article.title }}</h3>
-          <span>
-            Source: {{ article.source.name }}<br/>
-            Short Description: {{ article.description }}<br/>
-            Link: <a :href="article.url" style="cursor: pointer;">{{ article.url }}</a>
-          </span>
-          <br/><br/>
-        </li>
-      </ul>
-  </div>
-</div>
-<footer>
-<div>© Vigilant 2021 - CDCLab WS20/Practical Software Development & Applied AI WS20</div>
-</footer>
-</div>
 </template>
 
 <script>
-// import VueyeDatepicker from 'vueye-datepicker'
-import Datepicker from 'vuejs-datepicker'
+import DatePicker from 'vue2-datepicker'
+import 'vue2-datepicker/index.css';
+
+import * as Moment from 'moment';
+import { extendMoment } from 'moment-range';
+
+const moment = extendMoment(Moment);
+const dateFormat = "YYYY-MM-DD HH:mm:ss";
 
 export default {
+  components: {
+    DatePicker
+  },
   name: 'App',
-  data () {
+  
+  data () {   
     return {
-      date: {
-        value:new Date(),
-        formattedValue:''
-      },       
+      searchTerm: 'vigilant',
+      range: '',
       newsList: [],
       filter: ""
     }
@@ -70,7 +80,8 @@ export default {
   },
   methods: {
     getPosts() {
-      var newsAPIURL = "https://newsapi.org/v2/top-headlines?country=us&apiKey=7f7cf3684558439cbbb596fabb08ae74";
+      console.log("Search Term: "+this.searchTerm)
+      var newsAPIURL = "http://newsapi.org/v2/everything?q="+this.searchTerm+"&apiKey=7f7cf3684558439cbbb596fabb08ae74";
     fetch(newsAPIURL)
       .then(res => res.json())
       .then(res => (this.newsList = res))
@@ -79,10 +90,21 @@ export default {
   },
   computed: {
     filteredNews() {      
-      if (!this.filter) {
+      if (!this.filter && !this.range) {
+        console.log("Unfiltered");
+        console.log("Formatted: ",moment(this.range[0]).format(dateFormat));
         return this.newsList.articles;
       }
-      return this.newsList.articles.filter(p => p.source.name === this.filter);
+      else if (!this.filter) {
+        console.log("Filtered by range");
+        return this.newsList.articles.filter(p => p.publishedAt >= moment(this.range[0]).format(dateFormat) && p.publishedAt <= moment(this.range[1]).format(dateFormat));
+      }
+      else if (!this.range) {
+        console.log("Filtered by source");
+        return this.newsList.articles.filter(p => p.source.name === this.filter);
+      }
+      console.log("Filtered by source and range");
+      return this.newsList.articles.filter(p => p.source.name === this.filter && p.publishedAt >= moment(this.range[0]).format(dateFormat) && p.publishedAt <= moment(this.range[1]).format(dateFormat));
     },
     uniqueSources() {
       var newsSources = [];
@@ -96,10 +118,6 @@ export default {
       }
       return newsSources;
     }
-  },
-  components: {
-    // VueyeDatepicker
-    Datepicker
   }
 }
 </script>
@@ -153,6 +171,9 @@ h1{
   letter-spacing: 5px;
   text-align: center;
 }
+div.networks-datepicker {
+  height: 40rem;
+}
 div.networks {
   margin:5px; 
   padding:5px; 
@@ -171,7 +192,7 @@ div.networks {
   grid-area: w;
   background-color: #cbd9d9ab;
   /* background-color: #E2E9EA; */
-  /* padding: 40px; */
+  padding-bottom: 20px;
   /* height: 80px; */
   display: flex;
   flex-direction: column;

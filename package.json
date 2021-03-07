@@ -9,8 +9,13 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "moment-range": "^4.0.2",
     "newsapi": "^2.4.1",
+    "v2-datepicker": "^3.1.1",
     "vue": "^2.6.11",
+    "vue-moment": "^4.1.0",
+    "vue2-datepicker": "^3.9.0",
+    "vue2-daterange-picker": "^0.6.3",
     "vuejs-datepicker": "^1.6.2",
     "vueye-datepicker": "^0.1.7"
   },
