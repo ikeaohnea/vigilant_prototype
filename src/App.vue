@@ -4,7 +4,7 @@
     <div class="container">
       <div class="header">
         <a href="./" style="cursor: pointer;"><img src="@/assets/Vigilant_Icon_red.png" alt="Vigilant Logo"></a>
-        <a href="./" style="cursor: pointer;"> <h1>vigilant</h1></a>             
+        <h1>vigilant</h1>           
       </div>
       <div class= "search-box">
           <p>
@@ -18,27 +18,27 @@
           </div>   
       </div>
       <div class= "networks-datepicker">
-        <p>Select News Network:</p>
         <div class="networks">
+          <p>Select News Network:</p>
           <button class="active" @click="filter = ''">Show all ({{uniqueSources.length}})</button>      
           <button v-for="source in uniqueSources" :key="source" :class="{ 'active': filter === source }" @click="filter = source">{{ source }}</button>
         </div>
-        <p>Select Date Range:</p>
+        <p class="date-header">Select Date Range:</p>
         <div class="date">
           <DatePicker @click="filter = ''" v-model="range" lang="en" range type="date" confirm></DatePicker>
         </div>
-        <button v-on:click="range = ''">Reset Dates</button>
+        <button class="reset-button" v-on:click="range = ''">Reset Dates</button>
       </div>
       <div class= "articles">
-          <p>Article(s):</p>
+          <p class="article-header">Article(s):</p>
           <ul class="newsContainer">
             <li v-for="(article, index) in filteredNews" :item="article" :key="index" class="news">                  
-              <h3>{{ article.title }}</h3>
+              <a v-bind:href=article.url target="_blank" style="cursor: pointer;"><p class="headline">{{ article.title }}</p></a>
               <span>
-                Source: {{ article.source.name }}<br/>
-                Short Description: {{ article.description }}<br/>
-                Published: {{ article.publishedAt }} <br/>
-                Link: <a v-bind:href=article.url target="_blank" style="cursor: pointer;">{{ article.url }}</a>
+                <b>Source:</b> {{ article.source.name }}<br/>
+                <b>Short Description:</b> {{ article.description }}<br/>
+                <b>Published:</b> <em>{{ article.publishedAt }}</em> <br/>
+                <!-- Link: <a v-bind:href=article.url target="_blank" style="cursor: pointer;">{{ article.url }}</a> -->
               </span>
               <br/><br/>
             </li>
@@ -46,7 +46,7 @@
       </div>
     </div>
     <footer>
-      <div>© Vigilant 2021 - CDCLab WS20/Practical Software Development & Applied AI WS20</div>
+      <div>© Vigilant 2021 - Practical Software Development & Applied AI WS20</div>
     </footer>
   </div>
 </template>
@@ -145,11 +145,7 @@ h1, footer div{
         "n a"
         "n a";
   text-align: center;
-  /* height: 100vh; */
 }
-/* #app {
-  font-family: Helvetica, sans-serif;
-} */
 .header{
   grid-area: h;
   background-color: black;
@@ -171,29 +167,15 @@ h1{
   letter-spacing: 5px;
   text-align: center;
 }
-div.networks-datepicker {
-  height: 40rem;
-}
-div.networks {
-  margin:5px; 
-  padding:5px; 
-  height: 20%;
-  overflow: auto;
-}
 .networks{
   grid-area: n;
-  padding: 5%;
   background-color: rgba(195, 204, 204, 0.24);
+  padding: 40px;
 }
-/* .search-box, .networks{
-  background-color: #E2E9EA;
-} */
 .search-box{
   grid-area: w;
   background-color: #cbd9d9ab;
-  /* background-color: #E2E9EA; */
-  padding-bottom: 20px;
-  /* height: 80px; */
+  padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -232,6 +214,10 @@ ul.newsContainer {
   margin: 0;
   padding: 1em;
 }
+.article-header{
+  text-align: center;
+  padding: 40px 0 5px 0;
+}
 div.articles {
   padding:5px; 
   overflow: auto; 
@@ -241,29 +227,45 @@ div.articles {
   grid-area: a;
   background-color: #CBD9D9;
   height: 100vh;
-  /* background-color: #9ab2b4; */
-  /* padding: 20px; */
-  /* border-left: 2px dashed black; */
-  /* height: 300px; */
 }
-.articles p{
-  padding: 40px 0 0 0;
-}
-p{
+p, span{
   font-size: 20px;
   font-family: "Woodford Bourne", Helvetica, sans-serif;
   padding: 10px 0 10px 0;
+}
+span, .headline{
+  font-size: 15px;
+}
+a{
+  text-decoration: none;
+}
+.headline{
+  color: black;
+  cursor: pointer;
+  padding: 0 2px 0 2px;
+  margin: 0 0 5px 0;
+  font-size: 17px;
+  border-radius: 4%;
+  background-color: rgb(173, 203, 204);
 }
 h2{
   font-size: 20px;
   font-family: "Woodford Bourne", Helvetica, sans-serif;
   padding: 10px 0 10px 0;
 }
+.date-header{
+  margin: 15% 0 0 0;
+}
 .date{
-  /* padding: 80px; */
   display: flex;
   justify-content: center;
   font-family: "Woodford Bourne", Helvetica, sans-serif;
+}
+.reset-button{
+  /* background-color: rgb(241, 152, 182); */
+  background-color: #c02b1b;
+  margin: 20px 0 60px 0;
+  color: white;
 }
 button {
   border-radius: 4%;
@@ -274,10 +276,6 @@ button {
   background-color: #CBD9D9;
   justify-content: center;
 }
-/* not working */
-button :visited {
-  background-color: orange;
-  }
 footer div{
   color: white;
   text-align: center;
@@ -295,6 +293,12 @@ footer{
   width: 100%;
   height: 40px;
   background-color:#2E4950;
-
+}
+@media  screen and (max-width: 678px) {
+  .container{
+    display: flex;
+    flex-direction: column;
+  }
+  
 }
 </style>
